@@ -19,7 +19,7 @@ if pid1 == 0:
     fifo = open(fifo_00, 'w')
     mat = str(m1[0]*m2[0]+m1[2]*m2[1])
     fifo.write(mat + '\n')
-    fifo.close
+    fifo.close()
     os._exit(0)
 
 pid2 =os.fork()
@@ -30,9 +30,25 @@ if pid2 == 0:
     fifo.close()
     os._exit(0)
 
+pid3 =os.fork()
+if pid3 == 0:
+    fifo = open(fifo_00, 'w')
+    mat = str(m1[0]*m2[2]+m1[2]*m2[3])
+    fifo.write(mat + '\n')
+    fifo.close()
+    os._exit(0)
 
-os.waitpid(pid1, 0)
-os.waitpid(pid2, 0)
+pid4 =os.fork()
+if pid4 == 0:
+    fifo = open(fifo_00, 'w')
+    mat = str(m1[1]*m2[2]+m1[3]*m2[3])
+    fifo.write(mat + '\n')
+    fifo.close()
+    os._exit(0)
+
+
+#os.waitpid(pid1, 0)
+#os.waitpid(pid2, 0)
 
 fifo = open(fifo_00, 'r')
 cont = fifo.read()
