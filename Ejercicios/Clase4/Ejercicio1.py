@@ -14,6 +14,7 @@ fifo_00 = '/tmp/fifo_00'
 if not os.path.exists(fifo_00):
     os.mkfifo(fifo_00)
 
+
 pid1 = os.fork()
 if pid1 == 0:
     fifo = open(fifo_00, 'w')
@@ -46,11 +47,13 @@ if pid4 == 0:
     fifo.close()
     os._exit(0)
 
-
-#os.waitpid(pid1, 0)
-#os.waitpid(pid2, 0)
-
 fifo = open(fifo_00, 'r')
+
+os.waitpid(pid1, 0)
+os.waitpid(pid2, 0)
+os.waitpid(pid3, 0)
+os.waitpid(pid4, 0)
+
 cont = fifo.read()
 fifo.close()
 print(cont)
