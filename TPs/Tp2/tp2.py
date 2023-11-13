@@ -1,10 +1,10 @@
 import argparse
 import os
-from http.server import BaseHTTPRequestHandler, HTTPServer
 import socket
-from socketserver import ForkingMixIn
-from multiprocessing import Process, Pipe
 from PIL import Image
+from socketserver import ForkingMixIn
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from multiprocessing import Process, Pipe
 
 try:
     from PIL import Image
@@ -21,7 +21,7 @@ class ImageProcessingHandler(BaseHTTPRequestHandler):
         try:
             self.wfile.write(imagen_procesada)
         except BrokenPipeError:
-            print("Cierre de conexion forzada por el cliente")
+            print("Cierre de conexion")
 
     def procesar_imagen(self, archivo_entrada): 
         print("Creando un pipe")
@@ -34,14 +34,14 @@ class ImageProcessingHandler(BaseHTTPRequestHandler):
 
     def procesar_imagen_child(self, archivo_entrada, conn): 
         print (f"Creando Hijo ID:{os.getpid()}")
-        imagen = Image.open(archivo_entrada).convert('L')
-        temp_file = 'temp.jpg'
-        imagen.save(temp_file)
-        with open(temp_file, 'rb') as f:
+        temp = 'temp.jpg'
+        im = Image.open(archivo_entrada).convert('L')
+        im.save(temp)
+        with open(temp, 'rb') as f:
             imagen_procesada = f.read()
         conn.send(imagen_procesada)
-        os.remove(temp_file)
-        print("Proceso hijo terminado")
+        os.remove(temp)
+        print("hijo terminado")
 
 class ForkingHTTPServer(ForkingMixIn, HTTPServer):
     def __init__(self, server_address, RequestHandlerClass):
@@ -72,7 +72,8 @@ def main():
     
     run_server(args.ip, args.puerto)
 
-    #Ejemplo de uso: python3 tp2.py -i 127.0.0.1 -p 8080
 
 if __name__ == '__main__':
     main()
+    
+    #python3 tp2.py -i 127.0.0.1 -p 8080
